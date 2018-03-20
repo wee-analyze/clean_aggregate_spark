@@ -5,13 +5,11 @@ spark = SparkSession.builder.appName("iislogs").getOrCreate()
 
 raw_data = spark.sparkContext.textFile("hdfs_path_here")
 
-remove_info_headers = raw_data.filter(lambda x: x[0] != "#")
-
 def extract_data(line):
     column_split = line.split(" ")
     return(column_split[0], column_split[1], column_split[2])
 
-clean_data = remove_info_headers.map(extract_data)
+clean_data = raw_data.filter(lambda x: x[0] != "#").map(extract_data)
 
 # make data schema. Could have used this function. Here is an option
 # from pyspark.sql import Row
@@ -25,7 +23,6 @@ clean_data = remove_info_headers.map(extract_data)
 
 # However, this is limited because if you want to use other data types like timestamps and date then you have to do more 
 # processing as this is a Python code. Instead, use spark sql types
-
 
 
 clean_logs_schema = StructType([StructField("date", StringType(), True),
