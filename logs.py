@@ -11,7 +11,7 @@ def extract_data(line):
 
 clean_data = raw_data.filter(lambda x: x[0] != "#").map(extract_data)
 
-# make data schema. Could have used this function. Here is an option
+# make data schema. Could have used this function instead as an option
 # from pyspark.sql import Row
 #def make_table(line):
     #column_split = line.split(" ")
@@ -33,8 +33,10 @@ clean_logs_schema = StructType([StructField("date", StringType(), True),
 df = spark.createDataFrame(clean_data, clean_logs_schema)
 # df.printSchema()
 
+# aggregate by client IP column and count
 aggregate = df.groupBy("c_ip").count()
 
+# keep only counts more than 2500
 results = aggregate.filter(aggregate["count"] > 2500)
 
 
